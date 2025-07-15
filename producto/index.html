@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Registro de Productos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            width: 400px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            margin: 10px 0 5px;
+            color: #555;
+        }
+
+        input[type="text"], input[type="number"], textarea, select {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        input[type="number"] {
+            -moz-appearance: textfield; /* Quitar flechas en Firefox */
+        }
+
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none; /* Quitar flechas en Chrome */
+            margin: 0;
+        }
+
+        textarea {
+            resize: vertical;
+            height: 100px;
+        }
+
+        button {
+            padding: 12px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Registro de Producto</h1>
+        <form id="productForm">
+            <div class="form-group">
+                <label for="productName">Nombre del Producto:</label>
+                <input type="text" id="productName" name="productName" required>
+            </div>
+
+            <div class="form-group">
+                <label for="description">Descripción:</label>
+                <textarea id="description" name="description" required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="price">Precio:</label>
+                <input type="number" id="price" name="price" min="0" step="0.01" required>
+            </div>
+
+            <div class="form-group">
+                <label for="quantity">Cantidad:</label>
+                <input type="number" id="quantity" name="quantity" min="1" required>
+            </div>
+
+            <div class="form-group">
+                <label for="category">Categoría:</label>
+                <select id="category" name="category" required>
+                    <option value="">Seleccione una categoría</option>
+                    <option value="electronica">Electrónica</option>
+                    <option value="ropa">Ropa</option>
+                    <option value="alimentos">Alimentos</option>
+                </select>
+            </div>
+
+            <button type="submit">Registrar Producto</button>
+        </form>
+    </div>
+
+    <script>
+        // Ejemplo de cómo manejar el envío del formulario
+        document.getElementById('productForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const productName = document.getElementById('productName').value;
+            const description = document.getElementById('description').value;
+            const price = document.getElementById('price').value;
+            const quantity = document.getElementById('quantity').value;
+            const category = document.getElementById('category').value;
+
+            console.log(`Producto registrado: 
+                Nombre: ${productName},
+                Descripción: ${description},
+                Precio: ${price},
+                Cantidad: ${quantity},
+                Categoría: ${category}`);
+        });
+    </script>
+</body>
+</html>
