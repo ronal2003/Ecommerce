@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestión de Clientes</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    
+  <style>
+    body {
+      background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+      font-family: "Segoe UI", sans-serif;
+    }
+    .card {
+      border-radius: 1rem;
+    }
+    .card-header {
+      border-top-left-radius: 1rem;
+      border-top-right-radius: 1rem;
+    }
+    .form-control, .btn {
+      border-radius: .7rem !important;
+    }
+    table th {
+      background-color: #0d6efd !important;
+      color: white;
+    }
+    .btn-primary {
+      background-color: #0d6efd;
+      border: none;
+    }
+    .btn-primary:hover {
+      background-color: #0b5ed7;
+    }
+  </style>
+</head>
+<body class="p-4">
+
+  <div class="container">
+    <!-- 📌 Pantalla de Clientes -->
+    <div id="clientes">
+      <div class="card shadow-lg border-0">
+        <div class="card-header bg-primary text-white">
+          <h3 class="mb-0"><i class="bi bi-people-fill me-2"></i>Gestión de Clientes</h3>
+        </div>
+        <div class="card-body">
+
+          <!-- Formulario Cliente -->
+          <form id="formCliente" class="row g-3 mb-4">
+            <div class="col-md-6">
+              <label class="form-label fw-bold text-primary">Nombre</label>
+              <input type="text" id="nombre" class="form-control" placeholder="Ingrese nombre" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-bold text-primary">Apellido</label>
+              <input type="text" id="apellido" class="form-control" placeholder="Ingrese apellido" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-bold text-primary">Cédula</label>
+              <input type="text" id="cedula" class="form-control" placeholder="Ingrese cédula" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-bold text-primary">Teléfono</label>
+              <input type="text" id="telefono" class="form-control" placeholder="Ingrese teléfono" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-bold text-primary">Dirección</label>
+              <input type="text" id="direccion" class="form-control" placeholder="Ingrese dirección">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-bold text-primary">Correo</label>
+              <input type="email" id="correo" class="form-control" placeholder="Ingrese correo electrónico">
+            </div>
+            <div class="col-12 text-end">
+              <button type="submit" class="btn btn-primary px-4 shadow-sm">
+                <i class="bi bi-person-plus-fill me-1"></i> Guardar Cliente
+              </button>
+            </div>
+          </form>
+
+          <!-- Tabla Clientes -->
+          <div class="table-responsive">
+            <table class="table table-hover table-bordered align-middle shadow-sm">
+              <thead class="text-center">
+                <tr>
+                  <th>ID</th>
+                  <th>Nombre</th>
+                  <th>Apellido</th>
+                  <th>Cédula</th>
+                  <th>Teléfono</th>
+                  <th>Dirección</th>
+                  <th>Correo</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="tablaClientes" class="text-center">
+                <!-- Se llenará con JS -->
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- JS CRUD Clientes -->
+  <script>
+    let clientes = [];
+    let clienteId = 1;
+    let editandoId = null;
+
+    const form = document.getElementById("formCliente");
+    const tabla = document.getElementById("tablaClientes");
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      const cliente = {
+        id: editandoId ? editandoId : clienteId++,
+        nombre: document.getElementById("nombre").value,
+        apellido: document.getElementById("apellido").value,
+        cedula: document.getElementById("cedula").value,
+        telefono: document.getElementById("telefono").value,
+        direccion: document.getElementById("direccion").value,
+        correo: document.getElementById("correo").value
+      };
+
+      if (editandoId) {
+        // actualizar
+        clientes = clientes.map(c => c.id === editandoId ? cliente : c);
+        editandoId = null;
+      } else {
+        // agregar
+        clientes.push(cliente);
+      }
+
+      mostrarClientes();
+      form.reset();
+    });
+
+    function mostrarClientes() {
+      tabla.innerHTML = "";
+      clientes.forEach(c => {
+        tabla.innerHTML += `
+          <tr>
+            <td>${c.id}</td>
+            <td>${c.nombre}</td>
+            <td>${c.apellido}</td>
+            <td>${c.cedula}</td>
+            <td>${c.telefono}</td>
+            <td>${c.direccion}</td>
+            <td>${c.correo}</td>
+            <td>
+              <button class="btn btn-warning btn-sm me-1" onclick="editarCliente(${c.id})">
+                <i class="bi bi-pencil-square"></i>
+              </button>
+              <button class="btn btn-danger btn-sm" onclick="eliminarCliente(${c.id})">
+                <i class="bi bi-trash-fill"></i>
+              </button>
+            </td>
+          </tr>
+        `;
+      });
+    }
+
+    function editarCliente(id) {
+      const cliente = clientes.find(c => c.id === id);
+      if (!cliente) return;
+
+      document.getElementById("nombre").value = cliente.nombre;
+      document.getElementById("apellido").value = cliente.apellido;
+      document.getElementById("cedula").value = cliente.cedula;
+      document.getElementById("telefono").value = cliente.telefono;
+      document.getElementById("direccion").value = cliente.direccion;
+      document.getElementById("correo").value = cliente.correo;
+
+      editandoId = id;
+    }
+
+    function eliminarCliente(id) {
+      clientes = clientes.filter(c => c.id !== id);
+      mostrarClientes();
+    }
+  </script>
+
+</body>
+</html>

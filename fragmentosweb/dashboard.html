@@ -1,0 +1,551 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dashboard Comercial - Plataforma de Ventas</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    :root{ --brand: #0d6efd; --brand-dark:#0b5ed7; --bg:#f5f9ff; }
+    body{ background: var(--bg); min-height:100vh; font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Arial; }
+    .sidebar{ width:260px; background: #fff; border-right:1px solid #e9eef8; min-height:100vh; }
+    .brand-top{ padding:1rem; border-bottom:1px solid #eef4ff; display:flex; gap:.75rem; align-items:center; }
+    .brand-top .logo{ width:40px; height:40px; border-radius:8px; background:linear-gradient(135deg,var(--brand),var(--brand-dark)); display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700; }
+    .nav-link{ color:#334155; }
+    .nav-link.active{ background: linear-gradient(90deg, rgba(13,110,253,0.08), transparent); color:var(--brand); font-weight:600; border-radius:.5rem; }
+    .card-soft{ border-radius: .8rem; box-shadow: 0 6px 20px rgba(13,110,253,0.06); }
+    .table-responsive{ max-height: 52vh; overflow:auto; }
+    .badge-status{ padding:.4em .6em; border-radius:.5rem; font-size:.78rem; }
+    /* responsive */
+    @media (max-width: 991.98px){ .sidebar{ display:none; } }
+  </style>
+</head>
+<body>
+  <div class="d-flex">
+    <!-- SIDEBAR -->
+    <nav class="sidebar d-flex flex-column">
+      <div class="brand-top">
+        <div class="logo">B</div>
+        <div>
+          <div class="fw-bold">BlueAccess</div>
+          <small class="text-muted">Panel de ventas</small>
+        </div>
+      </div>
+      <div class="p-3">
+        <div class="mb-3 small text-uppercase text-muted">Comercial</div>
+        <ul class="nav nav-pills flex-column mb-3" id="menuComercial">
+          <li class="nav-item"><a href="cliente.html" class="nav-link" data-module="clientes"><i class="bi bi-people me-2"></i> Clientes</a></li>
+          <li class="nav-item"><a href="#" class="nav-link" data-module="productos"><i class="bi bi-box-seam me-2"></i> Productos</a></li>
+          <li class="nav-item"><a href="#" class="nav-link" data-module="pedidos_comercial"><i class="bi bi-cart3 me-2"></i> Pedidos</a></li>
+        </ul>
+
+        <div class="mb-3 small text-uppercase text-muted">Ventas</div>
+        <ul class="nav nav-pills flex-column mb-3" id="menuVentas">
+          <li class="nav-item"><a href="#" class="nav-link" data-module="pedidos_ventas"><i class="bi bi-receipt me-2"></i> Pedidos</a></li>
+          <li class="nav-item"><a href="#" class="nav-link" data-module="planillas"><i class="bi bi-file-earmark-spreadsheet me-2"></i> Planillas</a></li>
+          <li class="nav-item"><a href="#" class="nav-link" data-module="facturacion"><i class="bi bi-file-post me-2"></i> Facturación</a></li>
+        </ul>
+
+        <div class="mb-3 small text-uppercase text-muted">Inventario</div>
+        <ul class="nav nav-pills flex-column mb-3" id="menuInventario">
+          <li class="nav-item"><a href="#" class="nav-link" data-module="marcas"><i class="bi bi-award me-2"></i> Marcas</a></li>
+          <li class="nav-item"><a href="#" class="nav-link" data-module="lineas"><i class="bi bi-tag me-2"></i> Líneas</a></li>
+        </ul>
+      </div>
+      <div class="mt-auto p-3 small text-muted">Versión demo - sin backend</div>
+    </nav>
+
+    <!-- MAIN -->
+    <div class="flex-grow-1">
+      <!-- NAVBAR -->
+      <nav class="navbar bg-white border-bottom px-4">
+        <div class="container-fluid p-0">
+          <div class="d-flex align-items-center gap-3">
+            <button class="btn btn-outline-secondary d-lg-none" id="btnToggleSidebar"><i class="bi bi-list"></i></button>
+            <h5 class="mb-0">Dashboard Comercial</h5>
+          </div>
+          <div class="d-flex align-items-center gap-3">
+            <div class="text-end me-3">
+              <small class="text-muted">Hola, Usuario</small>
+              <div class="fw-semibold">Administrador</div>
+            </div>
+            <button class="btn btn-outline-danger btn-sm">Cerrar sesión</button>
+          </div>
+        </div>
+      </nav>
+
+      <!-- CONTENIDO -->
+      <main class="p-4">
+        <div id="moduleHeader" class="d-flex justify-content-between align-items-center mb-4">
+          <h4 id="moduleTitle">Inicio</h4>
+          <div id="moduleActions"></div>
+        </div>
+
+        <div id="moduleContent">
+          <!-- Por defecto dashboard cards -->
+          <div id="homeView">
+            <div class="row g-3">
+              <div class="col-md-3">
+                <div class="card card-soft p-3">
+                  <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                      <h6 class="mb-1">Clientes</h6>
+                      <div class="fs-4 fw-bold" id="countClientes">0</div>
+                    </div>
+                    <i class="bi bi-people fs-2 text-primary"></i>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="card card-soft p-3">
+                  <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                      <h6 class="mb-1">Productos</h6>
+                      <div class="fs-4 fw-bold" id="countProductos">0</div>
+                    </div>
+                    <i class="bi bi-box-seam fs-2 text-primary"></i>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="card card-soft p-3">
+                  <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                      <h6 class="mb-1">Pedidos</h6>
+                      <div class="fs-4 fw-bold" id="countPedidos">0</div>
+                    </div>
+                    <i class="bi bi-cart3 fs-2 text-primary"></i>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="card card-soft p-3">
+                  <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                      <h6 class="mb-1">Facturas</h6>
+                      <div class="fs-4 fw-bold" id="countFacturas">0</div>
+                    </div>
+                    <i class="bi bi-receipt fs-2 text-primary"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="row mt-4">
+              <div class="col-lg-8">
+                <div class="card card-soft p-3">
+                  <h6>Actividad reciente</h6>
+                  <p class="text-muted small">Aquí aparecerán acciones recientes (crear/editar) en esta demo.</p>
+                  <ul id="activityList" class="list-group list-group-flush"></ul>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="card card-soft p-3">
+                  <h6>Atajos</h6>
+                  <div class="d-grid gap-2">
+                    <button class="btn btn-primary" data-module="productos">Nuevo producto</button>
+                    <button class="btn btn-outline-primary" data-module="pedidos_comercial">Crear pedido</button>
+                    <button class="btn btn-outline-secondary" data-module="clientes">Nuevo cliente</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- VISTAS DINÁMICAS -->
+          <div id="viewsArea"></div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- MODALES para CRUD -->
+  <!-- Cliente -->
+  <div class="modal fade" id="modalCliente" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <form id="formCliente" class="needs-validation" novalidate>
+          <div class="modal-header">
+            <h5 class="modal-title">Cliente</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" id="clienteId">
+            <div class="row g-3">
+              <div class="col-md-6"><label class="form-label">Nombre</label><input id="clienteNombre" class="form-control" required></div>
+              <div class="col-md-6"><label class="form-label">Apellido</label><input id="clienteApellido" class="form-control" required></div>
+              <div class="col-md-6"><label class="form-label">Cédula</label><input id="clienteCedula" class="form-control" required></div>
+              <div class="col-md-6"><label class="form-label">Teléfono</label><input id="clienteTelefono" class="form-control"></div>
+              <div class="col-12"><label class="form-label">Dirección</label><input id="clienteDireccion" class="form-control"></div>
+              <div class="col-12"><label class="form-label">Correo</label><input id="clienteCorreo" type="email" class="form-control"></div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Guardar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Producto -->
+  <div class="modal fade" id="modalProducto" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <form id="formProducto" class="needs-validation" novalidate>
+          <div class="modal-header"><h5 class="modal-title">Producto</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+          <div class="modal-body">
+            <input type="hidden" id="productoId">
+            <div class="row g-3">
+              <div class="col-md-6"><label class="form-label">Nombre producto</label><input id="productoNombre" class="form-control" required></div>
+              <div class="col-md-3"><label class="form-label">Cantidad</label><input id="productoCantidad" type="number" min="0" class="form-control" required></div>
+              <div class="col-md-3"><label class="form-label">Precio</label><input id="productoPrecio" type="number" min="0" step="0.01" class="form-control" required></div>
+              <div class="col-md-6"><label class="form-label">Proveedor</label><input id="productoProveedor" class="form-control"></div>
+              <div class="col-md-3"><label class="form-label">Marca</label><select id="productoMarca" class="form-select"></select></div>
+              <div class="col-md-3"><label class="form-label">Línea</label><select id="productoLinea" class="form-select"></select></div>
+            </div>
+          </div>
+          <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button><button type="submit" class="btn btn-primary">Guardar</button></div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pedido -->
+  <div class="modal fade" id="modalPedido" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <form id="formPedido" class="needs-validation" novalidate>
+          <div class="modal-header"><h5 class="modal-title">Pedido</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+          <div class="modal-body">
+            <input type="hidden" id="pedidoId">
+            <div class="row">
+              <div class="col-md-5">
+                <label class="form-label">Cliente</label>
+                <select id="pedidoCliente" class="form-select" required></select>
+                <label class="form-label mt-3">Agregar producto</label>
+                <div class="input-group mb-2">
+                  <select id="pedidoProductoSelect" class="form-select"></select>
+                  <input id="pedidoProductoQty" type="number" class="form-control" min="1" value="1">
+                  <button class="btn btn-outline-primary" type="button" id="btnAddProductToOrder">Agregar</button>
+                </div>
+                <div class="card card-soft p-2">
+                  <h6>Productos en pedido</h6>
+                  <div class="table-responsive"><table class="table table-sm" id="tableProductsInOrder"><thead><tr><th>Producto</th><th>Qty</th><th>Precio</th><th></th></tr></thead><tbody></tbody></table></div>
+                </div>
+              </div>
+              <div class="col-md-7">
+                <label class="form-label">Observaciones</label>
+                <textarea id="pedidoObs" class="form-control" rows="6"></textarea>
+                <div class="mt-3 d-flex justify-content-between align-items-center">
+                  <div><strong>Total:</strong> <span id="pedidoTotal">0.00</span></div>
+                  <div>
+                    <label class="form-label">Estado</label>
+                    <select id="pedidoEstado" class="form-select">
+                      <option value="Pendiente">Pendiente</option>
+                      <option value="Procesando">Procesando</option>
+                      <option value="Enviado">Enviado</option>
+                      <option value="Entregado">Entregado</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button><button type="submit" class="btn btn-primary">Guardar Pedido</button></div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Planilla -->
+  <div class="modal fade" id="modalPlanilla" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form id="formPlanilla" class="needs-validation" novalidate>
+          <div class="modal-header"><h5 class="modal-title">Planilla</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+          <div class="modal-body">
+            <input type="hidden" id="planillaId">
+            <div class="mb-3"><label class="form-label">Fecha</label><input id="planillaFecha" type="date" class="form-control" required></div>
+            <div class="mb-3"><label class="form-label">Descripción</label><input id="planillaDesc" class="form-control"></div>
+            <div class="mb-3"><label class="form-label">Monto</label><input id="planillaMonto" type="number" step="0.01" class="form-control" required></div>
+          </div>
+          <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button><button type="submit" class="btn btn-primary">Guardar</button></div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Factura -->
+  <div class="modal fade" id="modalFactura" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <form id="formFactura" class="needs-validation" novalidate>
+          <div class="modal-header"><h5 class="modal-title">Factura</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+          <div class="modal-body">
+            <input type="hidden" id="facturaId">
+            <div class="mb-3"><label class="form-label">Pedido asociado</label><select id="facturaPedido" class="form-select"></select></div>
+            <div class="mb-3"><label class="form-label">Estado</label><select id="facturaEstado" class="form-select"><option>Pendiente</option><option>Pagada</option></select></div>
+            <div class="mb-3"><label class="form-label">Notas</label><textarea id="facturaNotas" class="form-control"></textarea></div>
+          </div>
+          <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button><button type="submit" class="btn btn-primary">Guardar</button></div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Marcas/Líneas -->
+  <div class="modal fade" id="modalSimple" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form id="formSimple" class="needs-validation" novalidate>
+          <div class="modal-header"><h5 class="modal-title" id="modalSimpleTitle">Elemento</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+          <div class="modal-body">
+            <input type="hidden" id="simpleId">
+            <div class="mb-3"><label class="form-label" id="modalSimpleLabel">Nombre</label><input id="simpleName" class="form-control" required></div>
+          </div>
+          <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button><button type="submit" class="btn btn-primary">Guardar</button></div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // ---------- Datos en memoria (puedes usar localStorage si quieres) ----------
+    let clientes = [];
+    let productos = [];
+    let pedidos = [];
+    let planillas = [];
+    let facturas = [];
+    let marcas = [];
+    let lineas = [];
+
+    // Contadores autoincrement
+    let counter = { cliente:1, producto:1, pedido:1, planilla:1, factura:1, marca:1, linea:1 };
+
+    // Helpers para actividad
+    function addActivity(text){
+      const ul = document.getElementById('activityList');
+      const li = document.createElement('li'); li.className='list-group-item small'; li.textContent = new Date().toLocaleString() + ' — ' + text; ul.prepend(li);
+    }
+
+    // --------- Render Counts ---------
+    function refreshCounts(){
+      document.getElementById('countClientes').textContent = clientes.length;
+      document.getElementById('countProductos').textContent = productos.length;
+      document.getElementById('countPedidos').textContent = pedidos.length;
+      document.getElementById('countFacturas').textContent = facturas.length;
+    }
+
+    // --------- Navegación de módulos ---------
+    const menuLinks = document.querySelectorAll('.nav-link[data-module]');
+    menuLinks.forEach(a => a.addEventListener('click', (e)=>{
+      e.preventDefault();
+      menuLinks.forEach(x => x.classList.remove('active'));
+      a.classList.add('active');
+      const module = a.getAttribute('data-module');
+      openModule(module);
+    }));
+
+    // Shortcut buttons
+    document.querySelectorAll('[data-module]').forEach(btn=>{
+      btn.addEventListener('click', ()=>{ openModule(btn.getAttribute('data-module')) });
+    });
+
+    // Toggle sidebar on small screens
+    document.getElementById('btnToggleSidebar').addEventListener('click', ()=>{
+      const sb = document.querySelector('.sidebar'); sb.style.display = sb.style.display === 'none' ? 'block' : 'none';
+    });
+
+    // ---------- VISTAS (renderers) ----------
+    const viewsArea = document.getElementById('viewsArea');
+    const moduleTitle = document.getElementById('moduleTitle');
+    const moduleActions = document.getElementById('moduleActions');
+
+    function openModule(name){
+      moduleActions.innerHTML='';
+      switch(name){
+        case 'clientes': renderClientes(); break;
+        case 'productos': renderProductos(); break;
+        case 'pedidos_comercial': renderPedidos('comercial'); break;
+        case 'pedidos_ventas': renderPedidos('ventas'); break;
+        case 'planillas': renderPlanillas(); break;
+        case 'facturacion': renderFacturas(); break;
+        case 'marcas': renderSimple('marcas'); break;
+        case 'lineas': renderSimple('lineas'); break;
+        default: viewsArea.innerHTML=''; moduleTitle.textContent='Inicio';
+      }
+    }
+
+    // ---------- CLIENTES ----------
+    function renderClientes(){
+      moduleTitle.textContent='Clientes';
+      moduleActions.innerHTML = '<button class="btn btn-primary" id="btnNewCliente">Nuevo cliente</button>';
+      viewsArea.innerHTML = `
+        <div class="card card-soft p-3"><div class="table-responsive"><table class="table table-hover" id="tableClientes"><thead><tr><th>ID</th><th>Nombre</th><th>Cédula</th><th>Teléfono</th><th>Correo</th><th>Acciones</th></tr></thead><tbody></tbody></table></div></div>
+      `;
+      document.getElementById('btnNewCliente').addEventListener('click', ()=>openClienteModal());
+      refreshClientesTable();
+    }
+
+    function refreshClientesTable(){
+      const tbody = document.querySelector('#tableClientes tbody'); tbody.innerHTML='';
+      clientes.forEach(c=>{
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${c.id}</td><td>${c.nombre} ${c.apellido}</td><td>${c.cedula}</td><td>${c.telefono||''}</td><td>${c.correo||''}</td>
+          <td>
+            <button class="btn btn-sm btn-outline-primary me-1" data-id="${c.id}" data-action="edit">Editar</button>
+            <button class="btn btn-sm btn-outline-danger" data-id="${c.id}" data-action="delete">Eliminar</button>
+          </td>`;
+        tbody.appendChild(tr);
+      });
+      // acciones
+      tbody.querySelectorAll('button[data-action]').forEach(btn=>{
+        btn.addEventListener('click', ()=>{
+          const id = parseInt(btn.getAttribute('data-id'));
+          const act = btn.getAttribute('data-action');
+          if(act==='edit') openClienteModal(id);
+          else deleteCliente(id);
+        })
+      });
+      refreshCounts();
+    }
+
+    function openClienteModal(id){
+      const modal = new bootstrap.Modal(document.getElementById('modalCliente'));
+      const form = document.getElementById('formCliente');
+      if(id){
+        const c = clientes.find(x=>x.id===id);
+        document.getElementById('clienteId').value = c.id;
+        document.getElementById('clienteNombre').value = c.nombre;
+        document.getElementById('clienteApellido').value = c.apellido;
+        document.getElementById('clienteCedula').value = c.cedula;
+        document.getElementById('clienteTelefono').value = c.telefono;
+        document.getElementById('clienteDireccion').value = c.direccion;
+        document.getElementById('clienteCorreo').value = c.correo;
+      } else {
+        form.reset(); document.getElementById('clienteId').value='';
+      }
+      modal.show();
+    }
+
+    document.getElementById('formCliente').addEventListener('submit', function(e){
+      e.preventDefault(); e.stopPropagation();
+      const id = document.getElementById('clienteId').value;
+      const obj = {
+        nombre: document.getElementById('clienteNombre').value.trim(),
+        apellido: document.getElementById('clienteApellido').value.trim(),
+        cedula: document.getElementById('clienteCedula').value.trim(),
+        telefono: document.getElementById('clienteTelefono').value.trim(),
+        direccion: document.getElementById('clienteDireccion').value.trim(),
+        correo: document.getElementById('clienteCorreo').value.trim()
+      };
+      if(!obj.nombre || !obj.apellido || !obj.cedula){ alert('Nombre, apellido y cédula son requeridos'); return; }
+      if(id){
+        const i = clientes.findIndex(x=>x.id===parseInt(id)); clientes[i] = { id:parseInt(id), ...obj };
+        addActivity('Cliente editado: ' + obj.nombre + ' ' + obj.apellido);
+      } else {
+        const nid = counter.cliente++;
+        clientes.push({ id:nid, ...obj });
+        addActivity('Cliente creado: ' + obj.nombre + ' ' + obj.apellido);
+      }
+      bootstrap.Modal.getInstance(document.getElementById('modalCliente')).hide();
+      refreshClientesTable();
+    });
+
+    function deleteCliente(id){
+      if(!confirm('Eliminar cliente ID ' + id + '?')) return;
+      clientes = clientes.filter(c=>c.id!==id);
+      addActivity('Cliente eliminado: ID '+id);
+      refreshClientesTable();
+    }
+
+    // ---------- PRODUCTOS ----------
+    function renderProductos(){
+      moduleTitle.textContent='Productos';
+      moduleActions.innerHTML = '<button class="btn btn-primary" id="btnNewProducto">Nuevo producto</button>';
+      viewsArea.innerHTML = `
+        <div class="card card-soft p-3"><div class="table-responsive"><table class="table table-hover" id="tableProductos"><thead><tr><th>ID</th><th>Nombre</th><th>Cantidad</th><th>Precio</th><th>Proveedor</th><th>Marca</th><th>Línea</th><th>Acciones</th></tr></thead><tbody></tbody></table></div></div>
+      `;
+      document.getElementById('btnNewProducto').addEventListener('click', ()=>openProductoModal());
+      refreshProductosTable();
+    }
+
+    function refreshProductosTable(){
+      const tbody = document.querySelector('#tableProductos tbody'); tbody.innerHTML='';
+      productos.forEach(p=>{
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${p.id}</td><td>${p.nombre}</td><td>${p.cantidad}</td><td>${p.precio.toFixed(2)}</td><td>${p.proveedor||''}</td><td>${p.marcaName||''}</td><td>${p.lineaName||''}</td>
+          <td>
+            <button class="btn btn-sm btn-outline-primary me-1" data-id="${p.id}" data-action="edit">Editar</button>
+            <button class="btn btn-sm btn-outline-danger" data-id="${p.id}" data-action="delete">Eliminar</button>
+          </td>`;
+        tbody.appendChild(tr);
+      });
+      tbody.querySelectorAll('button[data-action]').forEach(btn=>{
+        btn.addEventListener('click', ()=>{
+          const id = parseInt(btn.getAttribute('data-id'));
+          const act = btn.getAttribute('data-action');
+          if(act==='edit') openProductoModal(id);
+          else deleteProducto(id);
+        })
+      });
+      refreshCounts();
+    }
+
+    function openProductoModal(id){
+      populateMarcaLineaSelects();
+      const modal = new bootstrap.Modal(document.getElementById('modalProducto'));
+      const form = document.getElementById('formProducto');
+      if(id){
+        const p = productos.find(x=>x.id===id);
+        document.getElementById('productoId').value = p.id;
+        document.getElementById('productoNombre').value = p.nombre;
+        document.getElementById('productoCantidad').value = p.cantidad;
+        document.getElementById('productoPrecio').value = p.precio;
+        document.getElementById('productoProveedor').value = p.proveedor || '';
+        document.getElementById('productoMarca').value = p.marca || '';
+        document.getElementById('productoLinea').value = p.linea || '';
+      } else { form.reset(); document.getElementById('productoId').value=''; }
+      modal.show();
+    }
+
+    document.getElementById('formProducto').addEventListener('submit', function(e){
+      e.preventDefault(); e.stopPropagation();
+      const id = document.getElementById('productoId').value;
+      const obj = {
+        nombre: document.getElementById('productoNombre').value.trim(),
+        cantidad: parseInt(document.getElementById('productoCantidad').value) || 0,
+        precio: parseFloat(document.getElementById('productoPrecio').value) || 0,
+        proveedor: document.getElementById('productoProveedor').value.trim(),
+        marca: document.getElementById('productoMarca').value || null,
+        linea: document.getElementById('productoLinea').value || null
+      };
+      if(!obj.nombre){ alert('Nombre requerido'); return; }
+      // resolver nombre de marca/linea
+      obj.marcaName = obj.marca ? (marcas.find(m=>m.id===parseInt(obj.marca))||{}).name : '';
+      obj.lineaName = obj.linea ? (lineas.find(l=>l.id===parseInt(obj.linea))||{}).name : '';
+      if(id){
+        const i = productos.findIndex(x=>x.id===parseInt(id)); productos[i] = { id:parseInt(id), ...obj };
+        addActivity('Producto editado: ' + obj.nombre);
+      } else {
+        const nid = counter.producto++;
+        productos.push({ id:nid, ...obj });
+        addActivity('Producto creado: ' + obj.nombre);
+      }
+      bootstrap.Modal.getInstance(document.getElementById('modalProducto')).hide();
+      refreshProductosTable();
+      refreshPedidoSelects();
+    });
+
+    function deleteProducto(id){ if(!confirm('Eliminar producto ID '+id+'?')) return; productos = productos.filter(p=>p.id!==id); addActivity('Producto eliminado ID '+id); refreshProductosTable(); refreshPedidoSelects(); }
+
+    // ---------- PEDIDOS ----------
+    function renderPedidos(context){
+      moduleTitle.textContent = context === 'comercial' ? 'Pedidos (Comercial)' : 'Pedidos (Ventas)';
+      moduleActions.innerHTML = '<button class="btn btn-primary" id="btnNewPedido">Nuevo pedido</button>';
+      viewsArea.innerHTML = `
+        <div class="card card-soft p-3"><div class="table-responsive"><table class="table table-hover" id="tablePedidos"><thead><tr><th>ID</th><th>Cliente</th><th>Items</th><th>Total</th><th>Estado</th><th>Acciones</th></tr></thead><tbody></tbody></table></div></div>

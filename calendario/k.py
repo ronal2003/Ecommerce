@@ -1,0 +1,1 @@
+print(range(99,9))
